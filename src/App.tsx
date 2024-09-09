@@ -1,50 +1,76 @@
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
-
-import { Authenticator } from "@aws-amplify/ui-react";
+import  RecipeCreateForm  from "../ui-components/RecipeCreateForm"
+import { Authenticator, Button, View, Flex } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 
 const client = generateClient<Schema>();
 
 function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
-  useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
-  }, []);
 
-  function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
-  }
-  function deleteTodo(id: string) {
-    client.models.Todo.delete({ id });
-  }
+    const [showForm, setShowForm] = useState(false);
+
+    // Function to handle the button click
+    function handleAddRecipeClick() {
+      setShowForm(true); // Show the form when the button is clicked
+    }
+  // const [recipes, setRecipes] = useState<Array<Schema["Recipe"]["type"]>>([]);
+
+  // useEffect(() => {
+  //   client.models.Recipe.observeQuery().subscribe({
+  //     next: (data) => setRecipes([...data.items]),
+  //   });
+  // }, []);
+
+  // function createRecipe() {
+  //   client.models.Recipe.create({
+  //     title: window.prompt("Enter the recipe title"),
+  //     preparation_time: parseInt(
+  //       window.prompt("Enter preparation time in minutes"),
+  //       10
+  //     ),
+  //     instructions: window.prompt("Enter the recipe instructions"),
+  //     image: window.prompt("Enter the image URL"), // Assuming the URL is provided
+  //     vegetarian: window.confirm(
+  //       "Is this recipe vegetarian? Click 'OK' for Yes or 'Cancel' for No."
+  //     ),
+  //   })
+  //     .then(() => alert("Recipe created successfully!"))
+  //     .catch((err) => console.error("Error creating recipe:", err));
+  // }
+  //   function deleteRecipe(id: string) {
+  //     client.models.Recipe.delete({ id });
+  //   }
 
   return (
     <Authenticator>
       {({ signOut, user }) => (
-        <main>
-          <h1>{user?.signInDetails?.loginId}'s todos</h1>
-          <button onClick={createTodo}>+ new</button>
+        <View>
+          <h1>{user?.signInDetails?.loginId}'s recipes</h1>
+          <Flex>
+            <Button
+              variation="primary"
+              borderRadius="1rem"
+              onClick={handleAddRecipeClick}
+            >
+              Add Recipe
+            </Button>
+            {/*  <button onClick={createRecipe}>+ new</button>
           <ul>
-            {todos.map((todo) => (
-              <li onClick={() => deleteTodo(todo.id)} key={todo.id}>
-                {todo.content}
+            {recipes.map((recipe) => (
+              <li onClick={() => deleteRecipe(recipe.id)} key={recipe.id}>
+                {recipe.title}
               </li>
             ))}
-          </ul>
-          <div>
-            🥳 App successfully hosted. Try creating a new todo.
-            <br />
-            <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
-              Review next step of this tutorial.
-            </a>
-          </div>
-          <button onClick={signOut}>Sign out</button>
-        </main>
+          </ul> */}
+            {showForm && (
+              <RecipeCreateForm onClose={() => setShowForm(false)} />
+            )}
+            <button onClick={signOut}>Sign out</button>
+          </Flex>
+        </View>
       )}
     </Authenticator>
   );
