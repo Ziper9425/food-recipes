@@ -7,42 +7,48 @@ specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
-   // Ingredients Table
-  Ingredient: a.model({
-    id: a.id().required(),
-    name: a.string().required(),
-    description: a.string().required(), 
-  }),
-
+  // Ingredients Table
+  Ingredient: a
+    .model({
+      id: a.id().required(),
+      name: a.string().required(),
+      description: a.string().required(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
   // Measures Table (now linked to Ingredient)
-  Measure: a.model({
-    id: a.id().required(),
-    name: a.string().required(), // e.g., grams, cups, etc.
-    ingredientId: a.id().required(), // Foreign key referencing Ingredient table
-    ingredient: a.belongsTo("Ingredient", "ingredientId"), // Link to the Ingredient table
-  }),
+  Measure: a
+    .model({
+      id: a.id().required(),
+      name: a.string().required(), // e.g., grams, cups, etc.
+      ingredientId: a.id().required(), // Foreign key referencing Ingredient table
+      ingredient: a.belongsTo("Ingredient", "ingredientId"), // Link to the Ingredient table
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
 
   // Pantry Items Table
-  PantryItem: a.model({
-    id: a.id().required(),
-    ingredientId: a.id().required(),
-    ingredient: a.belongsTo("Ingredient", "ingredientId"), // Foreign key relationship to Ingredients table
-    quantity: a.float().required(),
-    measureId: a.id().required(), // Foreign key referencing Measures table
-    measure: a.belongsTo("Measure", "measureId"), // Link to the Measure table
-  }),
+  PantryItem: a
+    .model({
+      id: a.id().required(),
+      ingredientId: a.id().required(),
+      ingredient: a.belongsTo("Ingredient", "ingredientId"), // Foreign key relationship to Ingredients table
+      quantity: a.float().required(),
+      measureId: a.id().required(), // Foreign key referencing Measures table
+      measure: a.belongsTo("Measure", "measureId"), // Link to the Measure table
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
 
   // Recipes Table
-  Recipe: a.model({
-    id: a.id().required(),
-    title: a.string().required(),
-    preparation_time: a.integer(), // Minutes
-    instructions: a.string().required(), 
-    vegetarian: a.boolean().required(),
-    image: a.url(),
-  })
+  Recipe: a
+    .model({
+      id: a.id().required(),
+      title: a.string().required(),
+      preparation_time: a.integer(), // Minutes
+      instructions: a.string().required(),
+      vegetarian: a.boolean().required(),
+      image: a.url(),
+    })
     .authorization((allow) => [allow.publicApiKey()]),
-    // .authorization((allow) => [allow.owner()]),
+  // .authorization((allow) => [allow.owner()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
