@@ -1,79 +1,59 @@
-import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
-import  RecipeCreateForm  from "../ui-components/RecipeCreateForm"
-import { Authenticator, Button, View, Flex } from "@aws-amplify/ui-react";
+import { useState } from "react";
+import {
+  withAuthenticator,
+  WithAuthenticatorProps,
+  Button,
+  View,
+  Heading,
+} from "@aws-amplify/ui-react";
+
 import "@aws-amplify/ui-react/styles.css";
+import RecipeListComponent from "../ui-components/RecipeListComponent";
+import RecipeCreateForm from "../ui-components/RecipeCreateForm";
 
-const client = generateClient<Schema>();
+interface Props extends WithAuthenticatorProps {
+  isPassedToWithAuthenticator: boolean;
+}
 
-function App() {
+function App({ isPassedToWithAuthenticator, signOut, user }: Props) {
+  if (!isPassedToWithAuthenticator) {
+    throw new Error(`isPassedToWithAuthenticator was not provided`);
+  }
 
+  const [showForm, setShowForm] = useState(false);
 
-    const [showForm, setShowForm] = useState(false);
-
-    // Function to handle the button click
-    function handleAddRecipeClick() {
-      setShowForm(true); // Show the form when the button is clicked
-    }
-  // const [recipes, setRecipes] = useState<Array<Schema["Recipe"]["type"]>>([]);
-
-  // useEffect(() => {
-  //   client.models.Recipe.observeQuery().subscribe({
-  //     next: (data) => setRecipes([...data.items]),
-  //   });
-  // }, []);
-
-  // function createRecipe() {
-  //   client.models.Recipe.create({
-  //     title: window.prompt("Enter the recipe title"),
-  //     preparation_time: parseInt(
-  //       window.prompt("Enter preparation time in minutes"),
-  //       10
-  //     ),
-  //     instructions: window.prompt("Enter the recipe instructions"),
-  //     image: window.prompt("Enter the image URL"), // Assuming the URL is provided
-  //     vegetarian: window.confirm(
-  //       "Is this recipe vegetarian? Click 'OK' for Yes or 'Cancel' for No."
-  //     ),
-  //   })
-  //     .then(() => alert("Recipe created successfully!"))
-  //     .catch((err) => console.error("Error creating recipe:", err));
-  // }
-  //   function deleteRecipe(id: string) {
-  //     client.models.Recipe.delete({ id });
-  //   }
+  // Function to handle the button click
+  function handleAddRecipeClick() {
+    setShowForm(true); // Show the form when the button is clicked
+  }
 
   return (
-    <Authenticator>
-      {({ signOut, user }) => (
-        <View>
-          <h1>{user?.signInDetails?.loginId}'s recipes</h1>
-          <Flex>
-            <Button
-              variation="primary"
-              borderRadius="1rem"
-              onClick={handleAddRecipeClick}
-            >
-              Add Recipe
-            </Button>
-            {/*  <button onClick={createRecipe}>+ new</button>
-          <ul>
-            {recipes.map((recipe) => (
-              <li onClick={() => deleteRecipe(recipe.id)} key={recipe.id}>
-                {recipe.title}
-              </li>
-            ))}
-          </ul> */}
-            {showForm && (
-              <RecipeCreateForm onClose={() => setShowForm(false)} />
-            )}
-            <button onClick={signOut}>Sign out</button>
-          </Flex>
-        </View>
-      )}
-    </Authenticator>
+    <>
+      <Heading>Hello {user?.username}</Heading>
+      <Button variation="primary" borderRadius="1rem" onClick={signOut}>
+        Sign out
+      </Button>
+
+      <View>{showForm && <RecipeCreateForm />}</View>
+      <Button
+        variation="primary"
+        borderRadius="1rem"
+        onClick={handleAddRecipeClick}
+      >
+        Add Recipe
+      </Button>
+
+      <RecipeListComponent />
+    </>
   );
 }
 
-export default App;
+export default withAuthenticator(App);
+
+export async function getStaticProps() {
+  return {
+    props: {
+      isPassedToWithAuthenticator: true,
+    },
+  };
+}

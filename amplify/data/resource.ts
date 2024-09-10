@@ -11,7 +11,7 @@ const schema = a.schema({
   Ingredient: a.model({
     id: a.id().required(),
     name: a.string().required(),
-    description: a.string().required(), // Assuming "Text" is a longer string field
+    description: a.string().required(), 
   }),
 
   // Measures Table (now linked to Ingredient)
@@ -37,8 +37,9 @@ const schema = a.schema({
     id: a.id().required(),
     title: a.string().required(),
     preparation_time: a.integer(), // Minutes
-    instructions: a.string().required(), // Assuming "Text" is a longer string field
+    instructions: a.string().required(), 
     vegetarian: a.boolean().required(),
+    image: a.url(),
   })
     .authorization((allow) => [allow.publicApiKey()]),
     // .authorization((allow) => [allow.owner()]),
