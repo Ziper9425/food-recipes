@@ -13,6 +13,8 @@ const schema = a.schema({
       id: a.id().required(),
       name: a.string().required(),
       description: a.string().required(),
+      measures: a.hasMany("Measure", "ingredientId"), // if Ingredient has many Measures
+      pantryItems: a.hasMany("PantryItem", "ingredientId"), // if Ingredient has many PantryItems
     })
     .authorization((allow) => [allow.publicApiKey()]),
   // Measures Table (now linked to Ingredient)
