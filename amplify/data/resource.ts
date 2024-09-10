@@ -24,6 +24,7 @@ const schema = a.schema({
       name: a.string().required(), // e.g., grams, cups, etc.
       ingredientId: a.id().required(), // Foreign key referencing Ingredient table
       ingredient: a.belongsTo("Ingredient", "ingredientId"), // Link to the Ingredient table
+      pantryItems: a.hasMany("PantryItem", "measureId"),
     })
     .authorization((allow) => [allow.publicApiKey()]),
 
